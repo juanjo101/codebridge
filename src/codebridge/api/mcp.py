@@ -37,6 +37,8 @@ async def mcp_sse_endpoint(request: Request) -> StreamingResponse:
 
 @router.post("/mcp/messages")
 @router.post("/messages")
+@router.post("/mcp/sse")
+@router.post("/sse")
 async def mcp_messages_endpoint(request: Request) -> JSONResponse:
     """Handle MCP JSON-RPC 2.0 requests."""
     try:
