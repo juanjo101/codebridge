@@ -42,3 +42,24 @@ def test_redact_json_authorization():
     text = '{"authorization": "Bearer mytoken123"}'
     result = redact(text)
     assert "mytoken123" not in result
+
+
+def test_redacting_filter_preserves_integer_args():
+    import logging
+    from codebridge.logging import RedactingFilter
+
+    filter_obj = RedactingFilter()
+    record = logging.LogRecord(
+        name="test",
+        level=logging.INFO,
+        pathname="test.py",
+        lineno=10,
+        msg="Port %d and token %s",
+        args=(8787, "codebridge_local_token=mysecrettoken999"),
+        exc_info=None,
+    )
+    assert filter_obj.filter(record) is True
+    assert record.args == (8787, "codebridge_local_token=[REDACTED]")
+    # Verify formatting works without TypeError
+    formatted = record.getMessage()
+    assert formatted == "Port 8787 and token codebridge_local_token=[REDACTED]"
