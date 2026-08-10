@@ -105,8 +105,8 @@ async def run_tests() -> None:
         else:
             print(f"WARN (unexpected response: {content!r})")
             results["basic_response"] = "WARN"
-    except NvidiaProviderError as exc:
-        print(f"FAIL ({exc.message})")
+    except (NvidiaProviderError, Exception) as exc:
+        print(f"FAIL ({exc})")
         results["basic_response"] = "FAIL"
 
     # ── Test 4: Streaming ──────────────────────────────────────────
@@ -140,8 +140,8 @@ async def run_tests() -> None:
         else:
             print("WARN (no delta chunks received)")
             results["streaming"] = "WARN"
-    except NvidiaProviderError as exc:
-        print(f"FAIL ({exc.message})")
+    except (NvidiaProviderError, Exception) as exc:
+        print(f"FAIL ({exc})")
         results["streaming"] = "FAIL"
 
     # ── Test 5: Tool calling ───────────────────────────────────────
@@ -184,8 +184,8 @@ async def run_tests() -> None:
         else:
             print(f"UNKNOWN (finish_reason={finish})")
             results["tool_calling"] = "UNKNOWN"
-    except NvidiaProviderError as exc:
-        print(f"FAIL ({exc.message})")
+    except (NvidiaProviderError, Exception) as exc:
+        print(f"FAIL ({exc})")
         results["tool_calling"] = "FAIL"
 
     # ── Test 6: Reasoning ──────────────────────────────────────────
