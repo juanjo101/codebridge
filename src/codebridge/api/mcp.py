@@ -30,7 +30,7 @@ async def mcp_sse_endpoint(request: Request) -> StreamingResponse:
     """Establish MCP SSE transport connection."""
     async def sse_generator():
         # Send endpoint event informing client where to send POST messages
-        yield f"event: endpoint\ndata: /mcp/messages\n\n".encode("utf-8")
+        yield f"event: endpoint\ndata: http://127.0.0.1:8787/mcp/messages\n\n".encode("utf-8")
 
     return StreamingResponse(sse_generator(), media_type="text/event-stream")
 
