@@ -1,0 +1,34 @@
+# Example Codex configuration for CodeBridge
+# =============================================
+#
+# Copy relevant sections to: ~/.codex/config.toml
+#
+# Note: model_provider and model_providers settings only take
+# effect in the USER-LEVEL config (~/.codex/config.toml).
+# Project-local configs are ignored for provider settings.
+
+# ── Economy Mode: Codex → CodeBridge → NVIDIA ──────────────────────
+# Uncomment to use NVIDIA via CodeBridge
+
+# model_provider = "codebridge"
+# model = "nvidia/llama-3.1-nemotron-70b-instruct"
+
+[model_providers.codebridge]
+name = "CodeBridge NVIDIA"
+
+# CodeBridge server address (must match CODEBRIDGE_HOST:CODEBRIDGE_PORT in .env)
+base_url = "http://127.0.0.1:8787/v1"
+
+# Environment variable that holds the local auth token
+# Get your token: cat .codebridge_token
+# Set in shell: export CODEBRIDGE_LOCAL_TOKEN=$(cat .codebridge_token)
+env_key = "CODEBRIDGE_LOCAL_TOKEN"
+
+# Required by Codex CLI (2026+): must be "responses"
+wire_api = "responses"
+
+# ── Premium Mode: Direct OpenAI ────────────────────────────────────
+# This is the default — uncomment to explicitly set it
+
+# model_provider = "openai"
+# model = "gpt-5.6-sol"

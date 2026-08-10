@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "codebridge"
+version = "1.0.0"
+description = "Local gateway connecting Codex Responses API to NVIDIA NIM"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "CodeBridge" }]
+keywords = ["codex", "nvidia", "nim", "gateway", "openai", "responses"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+]
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "python-dotenv>=1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "respx>=0.21.0",
+    "httpx>=0.27.0",
+    "ruff>=0.8.0",
+]
+
+[project.scripts]
+codebridge = "codebridge.cli:main"
+codebridge-server = "codebridge.main:run"
+
+[project.urls]
+Homepage = "https://github.com/local/codebridge"
+Repository = "https://github.com/local/codebridge"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/codebridge"]
+
+[tool.ruff]
+src = ["src"]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "UP"]
+ignore = ["E501", "B008", "N818"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+    "unit: fast unit tests (no network)",
+    "integration: integration tests (may use mocks)",
+    "live: live NVIDIA API tests (requires NVIDIA_API_KEY)",
+    "smoke: smoke tests",
+]
+addopts = "-m 'not live'"
+
+[tool.coverage.run]
+source = ["src/codebridge"]
+omit = ["*/tests/*"]
