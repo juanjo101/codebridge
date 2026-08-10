@@ -400,6 +400,31 @@ async def stream_chat_to_responses(
                     if fn.get("arguments"):
                         existing["function"]["arguments"] += fn["arguments"]
 
+    # Process any trailing line in buffer
+    if buffer.strip() and buffer.strip().startswith(b"data: ") and buffer.strip() != b"data: [DONE]":
+        raw = buffer.strip()[6:]
+        if raw != b"[DONE]":
+            try:
+                delta_obj = json.loads(raw)
+                if delta_obj.get("usage"):
+                    total_usage = delta_obj["usage"]
+                choices = delta_obj.get("choices", [])
+                for choice in choices:
+                    delta = choice.get("delta", {})
+                    text = delta.get("content")
+                    if text:
+                        accumulated_text.append(text)
+                        delta_event = {
+                            "type": "response.output_text.delta",
+                            "item_id": f"msg_{rid[5:]}",
+                            "output_index": 0,
+                            "content_index": 0,
+                            "delta": text,
+                        }
+                        yield _sse_bytes("response.output_text.delta", delta_event)
+            except json.JSONDecodeError:
+                pass
+
     # Build final output
     final_output = []
     if accumulated_text:
