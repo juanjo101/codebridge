@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "codebridge": {
+      "url": "http://127.0.0.1:8787/mcp/sse",
+      "transport": "sse",
+      "headers": {
+        "Authorization": "Bearer FP48A58AloNP9QcOjA0csi3awTg1zT_LaLAha2DqCKM"
+      }
+    }
+  }
+}
