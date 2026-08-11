@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env bash
+''':'
+exec uv run python "$0" "$@"
+'''
 """
 query_cbm.py — Utility to send coding tasks directly to CodeBridge Gateway (NVIDIA NIM).
 """
@@ -34,7 +37,6 @@ def query_codebridge(prompt: str, model: str = None) -> str:
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            # Extract response text
             if "output" in data and isinstance(data["output"], list):
                 chunks = []
                 for item in data["output"]:
