@@ -1,34 +1,34 @@
-# CodeBridge Gateway
+# 🌉 CodeBridge Gateway
 
-**Local gateway connecting Codex to NVIDIA NIM.**
+> **Gateway local ligero que conecta Codex y tus asistentes de IA locales con los modelos de NVIDIA NIM.**
 
+[![Licencia MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg)](https://python.org)
+[![Docs Español](https://img.shields.io/badge/Docs-Español-orange.svg)](#-instrucciones-paso-a-paso)
+
+**[ versión en Español ] | [ English Version (README_EN.md) ](README_EN.md)**
+
+```text
+Codex / Cliente IDE  ──►  Responses API  ──►  CodeBridge Gateway  ──►  NVIDIA NIM
 ```
-Codex → OpenAI Responses API → CodeBridge → NVIDIA NIM
-```
 
-## What It Does
+---
 
-CodeBridge is a lightweight local gateway that lets you use NVIDIA NIM models
-with Codex as an alternative backend — routing everyday coding tasks to NVIDIA
-and reserving your premium OpenAI credits for work that truly needs them.
+## ⚡ ¿Qué es CodeBridge?
 
-## Why It Exists
+**CodeBridge** es un gateway local transparente que te permite conectar **Codex** y tus agentes de IA locales con la infraestructura de **NVIDIA NIM** (Llama 3.3 70B, DeepSeek Coder, Nemotron). 
 
-Codex uses the OpenAI Responses API. NVIDIA NIM is OpenAI-compatible, but only
-reliably at the Chat Completions level on their hosted service. CodeBridge:
+### 💡 Tu Modo Economía para Programar
+Con CodeBridge enrutas el 90% de tus tareas diarias de código (CRUD, refactorización, tests, SQL, documentación) hacia NVIDIA NIM sin consumir tus créditos de APIs de pago, reservando estas últimas solo para tareas de arquitectura de máxima complejidad.
 
-1. Accepts Responses API requests from Codex
-2. Translates to NVIDIA's supported `/v1/chat/completions` endpoint
-3. Returns Responses API format back to Codex
+---
 
-Completely transparent to Codex.
+## 📐 Arquitectura
 
-## Architecture
-
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
-│  Codex                                                    │
-│  (sends Responses API requests)                           │
+│  Codex / Asistente de IA                                │
+│  (Peticiones en formato OpenAI Responses API)           │
 └──────────────────────┬───────────────────────────────────┘
                        │ POST /v1/responses
                        ▼
@@ -36,12 +36,12 @@ Completely transparent to Codex.
 │  CodeBridge Gateway  (http://127.0.0.1:8787)             │
 │                                                           │
 │  ┌─────────────────────────────────────────────────┐     │
-│  │  Authentication     Telemetry    Model Router   │     │
-│  │  (local token)      (local only) (deterministic)│     │
+│  │  Autenticación     Telemetría    Ruteador       │     │
+│  │  (Token local)     (Local)       (Determinist.) │     │
 │  └──────────────────────┬──────────────────────────┘     │
 │                         │                                 │
 │  ┌──────────────────────▼──────────────────────────┐     │
-│  │  Protocol Adapter                               │     │
+│  │  Adaptador de Protocolo                         │     │
 │  │  Responses API ↔ Chat Completions               │     │
 │  └──────────────────────┬──────────────────────────┘     │
 └─────────────────────────┼────────────────────────────────┘
@@ -52,283 +52,111 @@ Completely transparent to Codex.
 └──────────────────────────────────────────────────────────┘
 ```
 
-## Requirements
+---
 
-- Python 3.10+
-- NVIDIA API key ([get one here](https://build.nvidia.com))
-- Codex CLI
+## 🛠️ Instrucciones Paso a Paso para Hacerlo Funcionar
 
-## Quick Start
+Sigue estos 5 sencillos pasos para dejar CodeBridge listo en tu entorno de desarrollo en menos de 5 minutos:
 
-### Linux / macOS
+### Paso 1: Obtener tu Clave API Gratuita de NVIDIA
+1. Entra a [NVIDIA Build Catalog](https://build.nvidia.com).
+2. Inicia sesión y genera tu **API Key** en el panel (comienza por `nvapi-...`).
 
+### Paso 2: Descargar e Instalar CodeBridge
+
+#### En Linux / macOS:
 ```bash
-git clone <repo> codebridge
+git clone https://github.com/juanjo101/codebridge.git
 cd codebridge
 bash scripts/setup.sh
 ```
 
-### Windows
-
+#### En Windows (PowerShell):
 ```powershell
-git clone <repo> codebridge
+git clone https://github.com/juanjo101/codebridge.git
 cd codebridge
 powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 ```
 
-## NVIDIA API Key
-
-> **ACTION REQUIRED:** Open `.env` and set your key.
-
+### Paso 3: Configurar tu API Key
+Crea el archivo `.env` en la raíz del proyecto y pega tu clave:
 ```env
-# .env
-NVIDIA_API_KEY=your_nvidia_api_key_here
+NVIDIA_API_KEY=nvapi-tu-clave-aqui
 ```
 
-Get your key at: https://build.nvidia.com → Sign in → API Keys
-
-**Security:**
-- Key is stored only in `.env` (never committed)
-- Key is never logged
-- Key is never forwarded to Codex
-- Gateway binds to `127.0.0.1` by default (local only)
-
-## Starting CodeBridge
-
+### Paso 4: Iniciar CodeBridge y Verificar Conexión
+Ejecuta el lanzador ultracorto `cb`:
 ```bash
-# Linux/macOS
-./scripts/start.sh
-
-# Windows
-.\scripts\start.ps1
-
-# Direct
-uv run codebridge serve
+./scripts/cb mcp
 ```
 
-Gateway starts at: `http://127.0.0.1:8787`
-
-## Testing NVIDIA Connection
-
+En otra terminal, corre la prueba de conectividad automática con NVIDIA:
 ```bash
 python scripts/test_nvidia.py
 ```
 
-Expected output:
-```
-NVIDIA CONNECTION TEST
-==================================================
-[1/6] Checking NVIDIA API... PASS (152 models)
-[2/6] Fetching models... PASS (152 models)
-[3/6] Testing basic response... PASS
-[4/6] Testing streaming... PASS (N chunks)
-[5/6] Testing tool calling... PASS / WARN
-[6/6] Testing reasoning... UNKNOWN
-```
-
-## Available Models
-
+### Paso 5: Conectar Codex a CodeBridge
+Configura Codex automáticamente ejecutando:
 ```bash
-uv run codebridge models
-```
-
-## Selecting a Model
-
-After listing models, set your preferred model in `.env`:
-
-```env
-NVIDIA_DEFAULT_MODEL=nvidia/llama-3.1-nemotron-70b-instruct
-```
-
-Recommendations (verify availability with `codebridge models`):
-- **Strong general/coding:** `nvidia/llama-3.1-nemotron-70b-instruct`
-- **Code-specialized:** `nvidia/deepseek-coder-v2`
-- **Fast/lightweight:** `meta/llama-3.2-8b-instruct`
-
-> **Note:** Model availability, capabilities, and costs depend on your NVIDIA
-> account and API tier. Always verify with `codebridge models`.
-
-## Connecting Codex
-
-```bash
-# Automated configuration
 uv run python scripts/configure_codex.py
 ```
-
-Or manually add to `~/.codex/config.toml`:
-
-```toml
-model_provider = "codebridge"
-model = "nvidia/your-chosen-model"
-
-[model_providers.codebridge]
-name = "CodeBridge NVIDIA"
-base_url = "http://127.0.0.1:8787/v1"
-env_key = "CODEBRIDGE_LOCAL_TOKEN"
-wire_api = "responses"
-```
-
-Set the auth token:
+Y exporta tu token de autenticación local en la terminal:
 ```bash
 export CODEBRIDGE_LOCAL_TOKEN=$(cat .codebridge_token)
 ```
 
-## Economy Mode vs Premium Mode
+---
 
-### Economy Mode (NVIDIA via CodeBridge)
+## 🤖 Prompt para Despliegue Automático con Agente IA
 
-Set `model_provider = "codebridge"` in Codex config.
+Si utilizas un asistente o agente de IA en tu IDE (como **Antigravity**, **Codex**, **Cursor** o **Copilot Workspace**), puedes copiar y pegarle este prompt para que instale, configure y despliegue CodeBridge automáticamente por ti:
 
-Good for:
-- Everyday coding, CRUD, APIs, frontend
-- SQL, tests, documentation, refactoring
-- Normal debugging and code explanation
+```text
+Por favor despliega y configura CodeBridge en este entorno local ejecutando los siguientes pasos:
 
-### Premium Mode (OpenAI direct)
+1. Revisa los archivos del repositorio y ejecuta el script de instalación automática:
+   - En Linux/macOS: `bash scripts/setup.sh`
+   - En Windows: `powershell -ExecutionPolicy Bypass -File scripts\setup.ps1`
+2. Si no existe el archivo `.env`, créalo a partir de `.env.example`. Pídeme mi NVIDIA_API_KEY o configura `NVIDIA_API_KEY=nvapi-KEY` si te la proveo.
+3. Inicia el gateway servidor ejecutan en segundo plano: `./scripts/cb mcp`
+4. Ejecuta el script de prueba de conectividad `python scripts/test_nvidia.py` para validar la conexión con NVIDIA.
+5. Ejecuta `uv run python scripts/configure_codex.py` para vincular Codex con CodeBridge y muéstrame las variables de entorno configuradas.
+```
 
-Set `model_provider = "openai"` in Codex config.
+---
 
-Good for:
-- Complex architecture decisions
-- Hard multi-system debugging
-- Security review
-- Situations where Economy Mode isn't sufficient
+## 🚀 Lanzador Corto y Skill MCP (`cbm`)
 
-> **Note:** We cannot promise specific savings. Your actual token usage and
-> costs depend on task volume, NVIDIA plan, and how often you use each mode.
+CodeBridge incluye un lanzador simplificado para la terminal y una habilidad para agentes:
 
-## Health
-
+### Comandos de Terminal (`cb`):
 ```bash
-curl http://127.0.0.1:8787/health
+./scripts/cb mcp     # Verifica/Arranca CodeBridge en 2do plano y muestra estado/token
+./scripts/cb logs    # Ver logs del servidor en tiempo real
+./scripts/cb stop    # Detener el servidor
 ```
 
-## Diagnostics
+### Habilidad para Agentes (`cbm`):
+Invocable dentro del entorno del agente usando la palabra clave **`cbm`** (Skill: `cbm` / `codebridge-mcp`).
 
-```bash
-# JSON
-curl http://127.0.0.1:8787/diagnostics
+---
 
-# Human-readable
-curl "http://127.0.0.1:8787/diagnostics?format=text"
-```
+## 📚 Guías Detalladas de la Comunidad
 
-## Usage Statistics
+- 📖 **[Guía de Instalación Detallada](docs/GUIA_INSTALACION_ES.md)**
+- 🧠 **[Modelos Recomendados de NVIDIA NIM](docs/MODELOS_RECOMENDADOS.md)**
+- 🛠️ **[Solución de Problemas y FAQ](docs/SOLUCION_PROBLEMAS.md)**
 
-```bash
-curl http://127.0.0.1:8787/usage
-# or
-uv run codebridge usage
-```
+---
 
-## Security
+## 🛡️ Seguridad
 
-- **Localhost only:** Gateway binds to `127.0.0.1` by default
-- **Token isolation:** Codex token ≠ NVIDIA API key (two separate secrets)
-- **No secret logging:** NVIDIA keys, tokens, and Authorization headers are redacted from all logs
-- **Constant-time auth:** Token comparison uses `hmac.compare_digest()`
-- **CORS restricted:** Only localhost origins permitted
+- **Host Local Únicamente:** Gateway configurado en `127.0.0.1`.
+- **Aislamiento de Secretos:** Tu `NVIDIA_API_KEY` nunca sale hacia Codex ni se muestra en los logs.
+- **Redacción de Logs:** Eliminación automática de credenciales en `codebridge_server.log`.
 
-## Responses API
+---
 
-CodeBridge receives standard Responses API requests from Codex and returns
-Responses API format responses. Supported fields:
+## 📄 Licencia
 
-| Field | Supported |
-|-------|-----------|
-| `input` | ✓ (string or array) |
-| `instructions` | ✓ (→ system message) |
-| `model` | ✓ |
-| `stream` | ✓ |
-| `tools` | ✓ |
-| `tool_choice` | ✓ |
-| `temperature` | ✓ |
-| `max_output_tokens` | ✓ |
-| `reasoning` | Logged, not forwarded (NVIDIA doesn't support) |
-| `store` | Not forwarded (not supported) |
-
-## Streaming
-
-Streaming is fully supported. NVIDIA's Chat Completions SSE stream is translated
-to Responses API SSE format:
-
-```
-event: response.created
-event: response.output_text.delta  (× N)
-event: response.completed
-```
-
-## Tool Calling
-
-Tool calls are preserved intact through the gateway:
-- `call_id` preserved
-- `function.name` preserved
-- `function.arguments` preserved
-- Event types mapped correctly
-
-## Reasoning
-
-Reasoning-style responses depend entirely on the NVIDIA model. CodeBridge does
-not fabricate reasoning or convert regular text into reasoning tokens.
-Models with reasoning capability (e.g., nemotron-think) return reasoning naturally.
-
-## Fallback
-
-NVIDIA's hosted service does not support `/v1/responses`. CodeBridge automatically
-uses `/v1/chat/completions` with protocol translation (configurable via
-`CODEBRIDGE_RESPONSES_FALLBACK=true`).
-
-## Troubleshooting
-
-| Symptom | Solution |
-|---------|---------|
-| 401 Unauthorized | `export CODEBRIDGE_LOCAL_TOKEN=$(cat .codebridge_token)` |
-| Gateway not starting | Check port 8787: `lsof -i :8787` |
-| No models listed | Set `NVIDIA_API_KEY` in `.env` |
-| Model not found | Run `codebridge models`, update `NVIDIA_DEFAULT_MODEL` |
-| Streaming broken | Check `CODEBRIDGE_RESPONSES_FALLBACK=true` |
-
-## Development
-
-```bash
-# Run tests
-uv run pytest
-
-# Run tests with coverage
-uv run pytest --cov
-
-# Lint
-uv run ruff check src/ tests/
-
-# Format
-uv run ruff format src/ tests/
-
-# Live NVIDIA tests (requires API key)
-python scripts/test_nvidia.py
-```
-
-## Roadmap
-
-| Version | Feature |
-|---------|---------|
-| **V1** | **Codex → CodeBridge → NVIDIA** (current) |
-| V1.1 | Capability detection, model profiles |
-| V1.2 | Routing rules, model selection by task type |
-| V2 | CodeBridge MCP server |
-| V3 | Additional providers (Ollama, OpenRouter) |
-
-## CLI Reference
-
-```
-codebridge serve           Start the gateway
-codebridge health          Check gateway health
-codebridge models          List NVIDIA models
-codebridge test            Run NVIDIA connectivity test
-codebridge usage           Show usage statistics
-codebridge token           Show local auth token
-codebridge configure-codex Configure Codex to use CodeBridge
-```
-
-## License
-
-MIT — see [LICENSE](LICENSE)
+MIT — Consulta [LICENSE](LICENSE) para más detalles.

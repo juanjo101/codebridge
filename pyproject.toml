@@ -42,6 +42,7 @@ dev = [
 
 [project.scripts]
 codebridge = "codebridge.cli:main"
+cb = "codebridge.cli:main"
 codebridge-server = "codebridge.main:run"
 
 [project.urls]
