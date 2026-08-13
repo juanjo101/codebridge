@@ -9,7 +9,7 @@ description = "Local gateway connecting Codex Responses API to NVIDIA NIM"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "CodeBridge" }]
+authors = [{ name = "Juan José Díaz Nerio", email = "juanjo101@gmail.com" }]
 keywords = ["codex", "nvidia", "nim", "gateway", "openai", "responses"]
 classifiers = [
     "Development Status :: 4 - Beta",

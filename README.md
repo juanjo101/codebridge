@@ -157,6 +157,12 @@ Invocable dentro del entorno del agente usando la palabra clave **`cbm`** (Skill
 
 ---
 
+## 👤 Autor y Creador / Author & Creator
+
+Creado y mantenido por **Juan José Díaz Nerio** ([@juanjo101](https://github.com/juanjo101)).
+
+---
+
 ## 📄 Licencia
 
 MIT — Consulta [LICENSE](LICENSE) para más detalles.

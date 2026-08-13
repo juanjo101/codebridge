@@ -107,6 +107,12 @@ uv run codebridge models  List NVIDIA models
 uv run codebridge test    Run NVIDIA connectivity test
 ```
 
+## 👤 Author & Creator
+
+Created and maintained by **Juan José Díaz Nerio** ([@juanjo101](https://github.com/juanjo101)).
+
+---
+
 ## License
 
 MIT — see [LICENSE](LICENSE)

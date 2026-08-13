@@ -153,6 +153,12 @@ codebridge configure-codex Configura automáticamente Codex
 
 ---
 
+## 👤 Autor y Creador
+
+Creado y mantenido por **Juan José Díaz Nerio** ([@juanjo101](https://github.com/juanjo101)).
+
+---
+
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia **MIT** — consulta el archivo [LICENSE](LICENSE) para más detalles.
