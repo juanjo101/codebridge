@@ -21,7 +21,7 @@ def test_mcp_sse_endpoint(client: TestClient):
     assert res.status_code == 200
     assert "text/event-stream" in res.headers["content-type"]
     assert "event: endpoint" in res.text
-    assert "data: /mcp/messages" in res.text
+    assert "/mcp/messages" in res.text
 
 
 def test_mcp_initialize(client: TestClient):

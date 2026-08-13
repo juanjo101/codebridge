@@ -198,6 +198,24 @@ def _configure_codex_inline() -> None:
     print("  python scripts/configure_codex.py")
 
 
+def cmd_convert(args: argparse.Namespace) -> None:
+    """Convert a document (PDF, Office, HTML) to Markdown."""
+    from codebridge.services.document import get_document_service
+
+    if not args.path:
+        print("ERROR: Please specify a file path to convert.")
+        print("Usage: codebridge convert <file_path>")
+        sys.exit(1)
+
+    try:
+        service = get_document_service()
+        result = service.convert_file(args.path)
+        print(result)
+    except Exception as exc:
+        print(f"ERROR: {exc}")
+        sys.exit(1)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="codebridge",
@@ -212,6 +230,11 @@ def main() -> None:
     subparsers.add_parser("usage", help="Show usage statistics")
     subparsers.add_parser("token", help="Show local authentication token")
     subparsers.add_parser("configure-codex", help="Configure Codex to use CodeBridge")
+    
+    parser_convert = subparsers.add_parser(
+        "convert", help="Convert a document (PDF, Office, HTML) to Markdown"
+    )
+    parser_convert.add_argument("path", help="Path to the document file to convert")
 
     args = parser.parse_args()
 
@@ -223,6 +246,7 @@ def main() -> None:
         "usage": cmd_usage,
         "token": cmd_token,
         "configure-codex": cmd_configure_codex,
+        "convert": cmd_convert,
     }
 
     if args.command in commands:
