@@ -80,9 +80,12 @@ echo "NVIDIA_API_KEY=nvapi-YOUR_KEY" > .env
 # 4. Start CodeBridge
 ./scripts/cb
 
-# 5. Connect Codex
+# 5. Connect Codex (Transparent for All Projects)
 uv run python scripts/configure_codex.py
+export CODEBRIDGE_LOCAL_TOKEN=$(cat .codebridge_token)
 ```
+
+> 💡 **Total Transparency:** Once connected, your global `~/.codex/config.toml` is updated. **Codex will transparently route requests through CodeBridge in all your local projects** without requiring any extra commands.
 
 ## AI Agent Deployment Prompt
 
@@ -92,9 +95,9 @@ If you are using an AI agent (Codex, Antigravity, Cursor, etc.), pass this promp
 Please set up and configure CodeBridge in this environment:
 1. Run `bash scripts/setup.sh` (or `powershell -ExecutionPolicy Bypass -File scripts\setup.ps1` on Windows).
 2. Ask me for my NVIDIA API Key or set `NVIDIA_API_KEY=your_key` in `.env`.
-3. Launch CodeBridge using `./scripts/cb`.
+3. Launch CodeBridge background server using `./scripts/cb mcp` or `uv run codebridge serve`.
 4. Run `python scripts/test_nvidia.py` to verify the connection.
-5. Run `uv run python scripts/configure_codex.py` to connect Codex to CodeBridge.
+5. Run `uv run python scripts/configure_codex.py` to connect Codex to CodeBridge globally.
 ```
 
 ## CLI Reference

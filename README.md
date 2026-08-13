@@ -95,15 +95,17 @@ En otra terminal, corre la prueba de conectividad automática con NVIDIA:
 python scripts/test_nvidia.py
 ```
 
-### Paso 5: Conectar Codex a CodeBridge
+### Paso 5: Conectar Codex a CodeBridge (Transparente para Todos tus Proyectos)
 Configura Codex automáticamente ejecutando:
 ```bash
 uv run python scripts/configure_codex.py
 ```
-Y exporta tu token de autenticación local en la terminal:
+Y exporta tu token de autenticación local en la terminal (o agrégalo a tu `.bashrc` / `.zshrc`):
 ```bash
 export CODEBRIDGE_LOCAL_TOKEN=$(cat .codebridge_token)
 ```
+
+> 💡 **Transparencia Total:** Una vez ejecutado este paso, tu configuración en `~/.codex/config.toml` se actualizará a nivel global. A partir de ese momento, **Codex utilizará CodeBridge de manera 100% transparente en todos tus proyectos locales** sin necesidad de comandos adicionales.
 
 ---
 
@@ -118,9 +120,9 @@ Por favor despliega y configura CodeBridge en este entorno local ejecutando los 
    - En Linux/macOS: `bash scripts/setup.sh`
    - En Windows: `powershell -ExecutionPolicy Bypass -File scripts\setup.ps1`
 2. Si no existe el archivo `.env`, créalo a partir de `.env.example`. Pídeme mi NVIDIA_API_KEY o configura `NVIDIA_API_KEY=nvapi-KEY` si te la proveo.
-3. Inicia el gateway servidor ejecutan en segundo plano: `./scripts/cb mcp`
+3. Inicia el gateway servidor en segundo plano con `./scripts/cb mcp` o `uv run codebridge serve`.
 4. Ejecuta el script de prueba de conectividad `python scripts/test_nvidia.py` para validar la conexión con NVIDIA.
-5. Ejecuta `uv run python scripts/configure_codex.py` para vincular Codex con CodeBridge y muéstrame las variables de entorno configuradas.
+5. Ejecuta `uv run python scripts/configure_codex.py` para vincular Codex con CodeBridge globalmente y muéstrame el estado final.
 ```
 
 ---
