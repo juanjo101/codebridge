@@ -32,15 +32,18 @@ _STRIP_RESPONSE_HEADERS = {
 }
 
 IMAGE_MODEL_ENDPOINTS = {
-    "black-forest-labs/flux.1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-dev",
-    "black-forest-labs/flux.1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-schnell",
-    "flux.1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-dev",
-    "flux.1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-schnell",
+    "black-forest-labs/flux.1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev",
+    "black-forest-labs/flux-1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev",
+    "black-forest-labs/flux.1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell",
+    "black-forest-labs/flux-1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell",
+    "flux.1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev",
+    "flux.1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell",
     "stabilityai/stable-diffusion-3-medium": "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-3-medium",
     "stabilityai/sdxl-turbo": "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl-turbo",
     "stabilityai/stable-diffusion-xl": "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl",
     "sdxl": "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl",
 }
+
 
 
 
@@ -214,8 +217,9 @@ class NvidiaProvider:
         client = self._get_client()
         payload = {
             "prompt": prompt,
-            "mode": "base64",
+            "mode": "base",
         }
+
         if cfg_scale is not None:
             payload["cfg_scale"] = cfg_scale
         if steps is not None:

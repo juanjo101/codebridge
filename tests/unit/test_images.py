@@ -27,7 +27,8 @@ async def test_generate_image_provider_success():
     provider = NvidiaProvider()
 
     with respx.mock:
-        respx.post("https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-dev").mock(
+        respx.post("https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev").mock(
+
             return_value=Response(
                 200,
                 json={"b64_json": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="},
@@ -64,7 +65,8 @@ async def test_images_endpoint_success(app, auth_headers):
     """Test /v1/images/generations returns 200 and image payload with valid token."""
     await reset_provider()
     with respx.mock:
-        respx.post("https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-dev").mock(
+        respx.post("https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev").mock(
+
             return_value=Response(
                 200,
                 json={"b64_json": "FAKE_B64_IMAGE_STRING"},
