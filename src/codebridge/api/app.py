@@ -15,10 +15,12 @@ from codebridge.api.chat import router as chat_router
 from codebridge.api.diagnostics import router as diag_router
 from codebridge.api.documents import router as documents_router
 from codebridge.api.health import router as health_router
+from codebridge.api.images import router as images_router
 from codebridge.api.mcp import router as mcp_router
 from codebridge.api.models import router as models_router
 from codebridge.api.responses import router as responses_router
 from codebridge.api.usage import router as usage_router
+
 from codebridge.config import get_settings
 from codebridge.providers.nvidia import reset_provider
 from codebridge.security.auth import AuthError, auth_error_handler
@@ -125,9 +127,11 @@ def create_app() -> FastAPI:
     app.include_router(responses_router)
     app.include_router(documents_router)
     app.include_router(models_router)
+    app.include_router(images_router)
     app.include_router(health_router)
     app.include_router(diag_router)
     app.include_router(usage_router)
+
 
     # Auth error handler (must come before global handler)
     app.add_exception_handler(AuthError, auth_error_handler)

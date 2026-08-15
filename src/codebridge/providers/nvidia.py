@@ -31,6 +31,18 @@ _STRIP_RESPONSE_HEADERS = {
     "connection",
 }
 
+IMAGE_MODEL_ENDPOINTS = {
+    "black-forest-labs/flux.1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-dev",
+    "black-forest-labs/flux.1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-schnell",
+    "flux.1-dev": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-dev",
+    "flux.1-schnell": "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-1-schnell",
+    "stabilityai/stable-diffusion-3-medium": "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-3-medium",
+    "stabilityai/sdxl-turbo": "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl-turbo",
+    "stabilityai/stable-diffusion-xl": "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl",
+    "sdxl": "https://ai.api.nvidia.com/v1/genai/stabilityai/sdxl",
+}
+
+
 
 class NvidiaProviderError(Exception):
     """Error from NVIDIA provider."""
@@ -178,6 +190,77 @@ class NvidiaProvider:
             raise NvidiaProviderError("NVIDIA_UNAVAILABLE", str(exc), 503) from exc
         except httpx.RemoteProtocolError as exc:
             raise NvidiaProviderError("STREAM_FAILED", f"Stream error: {exc}", 500) from exc
+
+    async def generate_image(
+        self,
+        prompt: str,
+        model: str | None = None,
+        size: str | None = "1024x1024",
+        response_format: str | None = "b64_json",
+        cfg_scale: float | None = 3.5,
+        steps: int | None = 28,
+    ) -> dict:
+        """Generate images via NVIDIA GenAI API endpoints."""
+        if not self._settings.nvidia_api_key_configured:
+            raise NvidiaProviderError("NVIDIA_API_KEY_NOT_CONFIGURED", "API key not set", 503)
+
+        model_name = model or "black-forest-labs/flux.1-dev"
+        endpoint = IMAGE_MODEL_ENDPOINTS.get(model_name)
+        if not endpoint:
+            # Fallback to constructing NVIDIA GenAI URL
+            cleaned = model_name.replace(".", "-")
+            endpoint = f"https://ai.api.nvidia.com/v1/genai/{cleaned}"
+
+        client = self._get_client()
+        payload = {
+            "prompt": prompt,
+            "mode": "base64",
+        }
+        if cfg_scale is not None:
+            payload["cfg_scale"] = cfg_scale
+        if steps is not None:
+            payload["steps"] = steps
+
+        try:
+            resp = await client.post(endpoint, json=payload)
+            _raise_for_nvidia_error(resp)
+            data = resp.json()
+            
+            # Extract image base64 from NVIDIA response variations
+            b64_data = (
+                data.get("b64_json")
+                or data.get("image")
+                or (data.get("artifacts", [{}])[0].get("base64"))
+            )
+            if not b64_data and "data" in data and isinstance(data["data"], list) and len(data["data"]) > 0:
+                b64_data = data["data"][0].get("b64_json") or data["data"][0].get("b64")
+
+            if not b64_data:
+                raise NvidiaProviderError(
+                    "IMAGE_GEN_FAILED",
+                    "NVIDIA response did not contain image data",
+                    500,
+                )
+
+            import time
+            item: dict[str, str] = {}
+            if response_format == "url":
+                # Data URL format if caller requested url
+                item["url"] = f"data:image/png;base64,{b64_data}"
+            else:
+                item["b64_json"] = b64_data
+
+            return {
+                "created": int(time.time()),
+                "data": [item],
+            }
+        except NvidiaProviderError:
+            raise
+        except httpx.HTTPStatusError as exc:
+            raise _map_http_error(exc) from exc
+        except httpx.ConnectError as exc:
+            raise NvidiaProviderError("NVIDIA_UNAVAILABLE", str(exc), 503) from exc
+
 
 
 def _raise_for_nvidia_error(resp: httpx.Response) -> None:
