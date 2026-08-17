@@ -324,9 +324,11 @@ async def stream_chat_to_responses(
     """
     rid = response_id or f"resp_{uuid.uuid4().hex[:24]}"
     created_at = int(time.time())
+    item_id = f"msg_{rid[5:]}"
     accumulated_text = []
     accumulated_tool_calls: dict[int, dict] = {}
     total_usage: dict = {}
+    text_item_added = False
 
     # Send response.created event
     created_event = {
@@ -341,6 +343,43 @@ async def stream_chat_to_responses(
         },
     }
     yield _sse_bytes("response.created", created_event)
+
+    async def _emit_text_delta(text: str):
+        nonlocal text_item_added
+        if not text_item_added:
+            text_item_added = True
+            item_added_event = {
+                "type": "response.output_item.added",
+                "output_index": 0,
+                "item": {
+                    "id": item_id,
+                    "object": "realtime.item",
+                    "type": "message",
+                    "status": "in_progress",
+                    "role": "assistant",
+                    "content": [],
+                },
+            }
+            yield _sse_bytes("response.output_item.added", item_added_event)
+
+            part_added_event = {
+                "type": "response.content_part.added",
+                "output_index": 0,
+                "item_id": item_id,
+                "part_index": 0,
+                "part": {"type": "output_text", "text": ""},
+            }
+            yield _sse_bytes("response.content_part.added", part_added_event)
+
+        accumulated_text.append(text)
+        delta_event = {
+            "type": "response.output_text.delta",
+            "item_id": item_id,
+            "output_index": 0,
+            "content_index": 0,
+            "delta": text,
+        }
+        yield _sse_bytes("response.output_text.delta", delta_event)
 
     buffer = b""
     async for chunk in nvidia_stream:
@@ -362,45 +401,57 @@ async def stream_chat_to_responses(
             except json.JSONDecodeError:
                 continue
 
-            # Extract usage if present
             if delta_obj.get("usage"):
                 total_usage = delta_obj["usage"]
 
             choices = delta_obj.get("choices", [])
             for choice in choices:
                 delta = choice.get("delta", {})
-                # Text delta
                 text = delta.get("content")
                 if text:
-                    accumulated_text.append(text)
-                    delta_event = {
-                        "type": "response.output_text.delta",
-                        "item_id": f"msg_{rid[5:]}",
-                        "output_index": 0,
-                        "content_index": 0,
-                        "delta": text,
-                    }
-                    yield _sse_bytes("response.output_text.delta", delta_event)
+                    async for event in _emit_text_delta(text):
+                        yield event
 
-                # Tool call deltas
                 for tc in delta.get("tool_calls") or []:
                     idx = tc.get("index", 0)
                     if idx not in accumulated_tool_calls:
+                        tc_id = tc.get("id") or f"call_{uuid.uuid4().hex[:20]}"
+                        fc_id = f"fc_{uuid.uuid4().hex[:20]}"
                         accumulated_tool_calls[idx] = {
-                            "id": tc.get("id", ""),
-                            "type": "function",
-                            "function": {"name": "", "arguments": ""},
+                            "id": fc_id,
+                            "call_id": tc_id,
+                            "name": "",
+                            "arguments": "",
                         }
+                        item_added_event = {
+                            "type": "response.output_item.added",
+                            "output_index": idx + (1 if text_item_added else 0),
+                            "item": {
+                                "id": fc_id,
+                                "call_id": tc_id,
+                                "type": "function_call",
+                                "name": "",
+                                "arguments": "",
+                                "status": "in_progress",
+                            },
+                        }
+                        yield _sse_bytes("response.output_item.added", item_added_event)
+
                     existing = accumulated_tool_calls[idx]
                     fn = tc.get("function", {})
                     if fn.get("name"):
-                        existing["function"]["name"] += fn["name"]
-                    if tc.get("id"):
-                        existing["id"] = tc["id"]
+                        existing["name"] += fn["name"]
                     if fn.get("arguments"):
-                        existing["function"]["arguments"] += fn["arguments"]
+                        arg_delta = fn["arguments"]
+                        existing["arguments"] += arg_delta
+                        arg_delta_event = {
+                            "type": "response.function_call_arguments.delta",
+                            "item_id": existing["id"],
+                            "call_id": existing["call_id"],
+                            "delta": arg_delta,
+                        }
+                        yield _sse_bytes("response.function_call_arguments.delta", arg_delta_event)
 
-    # Process any trailing line in buffer
     if buffer.strip() and buffer.strip().startswith(b"data: ") and buffer.strip() != b"data: [DONE]":
         raw = buffer.strip()[6:]
         if raw != b"[DONE]":
@@ -413,38 +464,88 @@ async def stream_chat_to_responses(
                     delta = choice.get("delta", {})
                     text = delta.get("content")
                     if text:
-                        accumulated_text.append(text)
-                        delta_event = {
-                            "type": "response.output_text.delta",
-                            "item_id": f"msg_{rid[5:]}",
-                            "output_index": 0,
-                            "content_index": 0,
-                            "delta": text,
-                        }
-                        yield _sse_bytes("response.output_text.delta", delta_event)
+                        async for event in _emit_text_delta(text):
+                            yield event
             except json.JSONDecodeError:
                 pass
 
-    # Build final output
     final_output = []
-    if accumulated_text:
+    if text_item_added:
+        full_text = "".join(accumulated_text)
+        text_done_event = {
+            "type": "response.output_text.done",
+            "output_index": 0,
+            "item_id": item_id,
+            "content_index": 0,
+            "text": full_text,
+        }
+        yield _sse_bytes("response.output_text.done", text_done_event)
+
+        part_done_event = {
+            "type": "response.content_part.done",
+            "output_index": 0,
+            "item_id": item_id,
+            "part_index": 0,
+            "part": {"type": "output_text", "text": full_text},
+        }
+        yield _sse_bytes("response.content_part.done", part_done_event)
+
+        item_msg = {
+            "id": item_id,
+            "object": "realtime.item",
+            "type": "message",
+            "status": "completed",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": full_text}],
+        }
+        item_done_event = {
+            "type": "response.output_item.done",
+            "output_index": 0,
+            "item": item_msg,
+        }
+        yield _sse_bytes("response.output_item.done", item_done_event)
+
         final_output.append(
             {
                 "type": "message",
-                "id": f"msg_{rid[5:]}",
+                "id": item_id,
                 "role": "assistant",
-                "content": [{"type": "output_text", "text": "".join(accumulated_text)}],
+                "content": [{"type": "output_text", "text": full_text}],
                 "status": "completed",
             }
         )
-    for tc in accumulated_tool_calls.values():
+
+    for idx, tc in accumulated_tool_calls.items():
+        args_done_event = {
+            "type": "response.function_call_arguments.done",
+            "item_id": tc["id"],
+            "call_id": tc["call_id"],
+            "arguments": tc["arguments"],
+        }
+        yield _sse_bytes("response.function_call_arguments.done", args_done_event)
+
+        fc_item = {
+            "id": tc["id"],
+            "call_id": tc["call_id"],
+            "type": "function_call",
+            "name": tc["name"],
+            "arguments": tc["arguments"],
+            "status": "completed",
+        }
+        tc_item_done_event = {
+            "type": "response.output_item.done",
+            "output_index": idx + (1 if text_item_added else 0),
+            "item": fc_item,
+        }
+        yield _sse_bytes("response.output_item.done", tc_item_done_event)
+
         final_output.append(
             {
                 "type": "function_call",
-                "id": f"fc_{uuid.uuid4().hex[:20]}",
-                "call_id": tc.get("id", f"call_{uuid.uuid4().hex[:20]}"),
-                "name": tc["function"]["name"],
-                "arguments": tc["function"]["arguments"],
+                "id": tc["id"],
+                "call_id": tc["call_id"],
+                "name": tc["name"],
+                "arguments": tc["arguments"],
                 "status": "completed",
             }
         )
