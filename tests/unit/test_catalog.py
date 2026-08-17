@@ -61,3 +61,14 @@ def test_capability_inference_large():
 def test_capability_inference_fast():
     caps = _infer_capabilities("meta/llama-3.2-8b-instruct")
     assert "fast" in caps
+
+
+def test_resolve_model_openai_fallback():
+    from codebridge.routing.router import resolve_model
+    from codebridge.config import reset_settings
+    reset_settings()
+    catalog = ModelCatalog()
+    catalog.update([{"id": "meta/llama-3.3-70b-instruct"}])
+    resolved = resolve_model("gpt-5.6-sol", catalog=catalog)
+    assert resolved == "meta/llama-3.3-70b-instruct"
+

@@ -36,10 +36,18 @@ def resolve_model(
     # 1. Explicitly requested model
     if requested_model and requested_model.strip():
         model = requested_model.strip()
-        if cat.count() > 0 and not cat.has_model(model):
-            logger.warning("model_not_in_catalog model=%s (using anyway)", model)
-        logger.debug("model_resolved source=explicit model=%s", model)
-        return model
+        is_openai_name = model.startswith(("gpt-", "o1-", "o3-", "codex-", "text-embedding-"))
+        if cat.count() > 0:
+            if cat.has_model(model):
+                logger.debug("model_resolved source=explicit model=%s", model)
+                return model
+            logger.warning(
+                "model_not_in_catalog model=%s, falling back to default/configured model",
+                model,
+            )
+        elif not is_openai_name:
+            logger.debug("model_resolved source=explicit_uncached model=%s", model)
+            return model
 
     # 2. Configured default
     if settings.nvidia_default_model.strip():
