@@ -32,8 +32,41 @@ def query_codebridge(prompt: str, model: str = None) -> str:
     # Append new user prompt
     history.append({"role": "user", "content": prompt})
 
+    import subprocess
+
+    # 1. Update Project Map
+    map_script = Path(__file__).parent / "generate_map.py"
+    if map_script.exists():
+        try:
+            subprocess.run([sys.executable, str(map_script)], check=False)
+        except Exception:
+            pass
+
+    system_instructions = "Eres un asistente de programación experto impulsado por NVIDIA NIM a través de CodeBridge Gateway. Responde con soluciones técnicas de alta calidad en español."
+    
+    # 2. Inject Project Map
+    map_file = Path(__file__).parent.parent / ".cbm_project_map.txt"
+    if map_file.exists():
+        try:
+            map_data = map_file.read_text(encoding="utf-8")
+            system_instructions += f"\n\n--- CONTEXTO DEL PROYECTO (MAPA) ---\n{map_data[:5000]}\n--- FIN DEL MAPA ---\n"
+        except Exception:
+            pass
+
+    # 3. Inject UI/UX rules if keyword matches
+    prompt_lower = prompt.lower()
+    ux_keywords = ["ui", "ux", "frontend", "diseño", "pantalla", "interfaz", "css", "html", "react"]
+    if any(k in prompt_lower for k in ux_keywords):
+        ui_skill_file = Path(__file__).parent.parent / ".agents" / "skills" / "cbm-ui-ux" / "SKILL.md"
+        if ui_skill_file.exists():
+            try:
+                ui_data = ui_skill_file.read_text(encoding="utf-8")
+                system_instructions += f"\n\n--- REGLAS UI/UX OBLIGATORIAS ---\n{ui_data}\n--- FIN REGLAS UI/UX ---\n"
+            except Exception:
+                pass
+
     payload = {
-        "instructions": "Eres un asistente de programación experto impulsado por NVIDIA NIM a través de CodeBridge Gateway. Responde con soluciones técnicas de alta calidad en español.",
+        "instructions": system_instructions,
         "input": history
     }
     if model:
