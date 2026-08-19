@@ -1,0 +1,293 @@
+# PROJECT CONTEXT MAP
+
+Directory: /
+  - .cbm_history.json
+  - .cbm_project_map.txt
+  - .codebridge.pid
+  - .codebridge_token
+  - .env
+  - .gitignore
+  - AGENTS.md
+  - LICENSE
+  - README.md
+  - README_EN.md
+  - README_ES.md
+  - codebridge_server.log
+  - codebridge_stderr.log
+  - codebridge_stdout.log
+  - prompt
+  - pyproject.toml
+  - uv.lock
+
+Directory: /tests
+  - __init__.py
+
+Directory: /tests/unit
+  - __init__.py
+  - test_catalog.py
+      Symbols:
+        def test_catalog_update_and_list(...)
+        def test_catalog_has_model(...)
+        def test_catalog_staleness(...)
+        def test_catalog_openai_format(...)
+        def test_capability_inference_coding(...)
+        def test_capability_inference_reasoning(...)
+        def test_capability_inference_large(...)
+        def test_capability_inference_fast(...)
+        def test_resolve_model_openai_fallback(...)
+  - test_compatibility.py
+      Symbols:
+        def test_string_input_becomes_user_message(...)
+        def test_instructions_become_system_message(...)
+        def test_max_output_tokens_converted(...)
+        def test_temperature_preserved(...)
+        def test_streaming_preserved(...)
+        def test_tools_preserved(...)
+        def test_array_input_messages(...)
+        def test_chat_to_responses_basic(...)
+        def test_chat_to_responses_tool_call(...)
+        def test_finish_reason_mapping(...)
+  - test_config.py
+      Symbols:
+        def test_default_settings(...)
+        def test_nvidia_key_configured(...)
+        def test_nvidia_key_not_configured(...)
+        def test_base_url_strip_trailing_slash(...)
+        def test_effective_token_generated(...)
+        def test_effective_token_from_config(...)
+  - test_document.py
+      Symbols:
+        def test_document_service_convert_text(...)
+        def test_document_service_convert_bytes(...)
+        def test_document_service_missing_file(...)
+        def test_convert_api_endpoint(...)
+  - test_images.py
+      Symbols:
+        def app(...)
+        def auth_headers(...)
+  - test_redaction.py
+      Symbols:
+        def test_redact_nvidia_api_key(...)
+        def test_redact_authorization_bearer(...)
+        def test_redact_local_token(...)
+        def test_redact_nvapi_pattern(...)
+        def test_no_false_redaction(...)
+        def test_redact_json_authorization(...)
+        def test_redacting_filter_preserves_integer_args(...)
+  - test_telemetry.py
+      Symbols:
+        def test_initial_state(...)
+        def test_record_success(...)
+        def test_record_failure(...)
+        def test_streaming_tracking(...)
+        def test_per_model_tracking(...)
+        def test_null_tokens_when_not_provided(...)
+
+Directory: /tests/integration
+  - __init__.py
+  - test_api.py
+      Symbols:
+        def reset_singletons(...)
+        def client(...)
+        def test_health_ok(...)
+        def test_root_endpoint(...)
+        def test_auth_missing_token(...)
+        def test_auth_wrong_token(...)
+        def test_auth_malformed_header(...)
+        def test_models_endpoint(...)
+        def test_responses_simple(...)
+        def test_responses_tool_call_preserved(...)
+        def test_nvidia_auth_error_returns_401(...)
+        def test_usage_endpoint(...)
+  - test_chat.py
+      Symbols:
+        def client(...)
+        def test_get_chat_ui(...)
+        def test_root_info(...)
+  - test_mcp.py
+      Symbols:
+        def client(...)
+        def test_mcp_sse_endpoint(...)
+        def test_mcp_initialize(...)
+        def test_mcp_tools_list(...)
+        def test_mcp_tools_call(...)
+  - test_streaming.py
+      Symbols:
+        def reset_singletons(...)
+        def client(...)
+        def _build_sse_chunk(...)
+        def _build_sse_done(...)
+        def test_streaming_produces_sse_events(...)
+        def test_streaming_tool_calls_preserved(...)
+
+Directory: /scripts
+  - cb
+  - configure_codex.py
+      Symbols:
+        def main(...)
+        def _print_instructions(...)
+  - generate_map.py
+      Symbols:
+        def get_python_signatures(...)
+        def generate_map(...)
+  - query_cbm.py
+      Symbols:
+        def query_codebridge(...)
+  - register_service.ps1
+  - register_service.sh
+  - setup.ps1
+  - setup.sh
+  - start.ps1
+  - start.sh
+  - start_daemon.sh
+  - test_nvidia.py
+      Symbols:
+        def main(...)
+
+Directory: /docs
+  - GUIA_INSTALACION_ES.md
+  - MODELOS_RECOMENDADOS.md
+  - SOLUCION_PROBLEMAS.md
+
+Directory: /src
+
+Directory: /src/codebridge
+  - __init__.py
+  - cli.py
+      Symbols:
+        def cmd_serve(...)
+        def cmd_health(...)
+        def cmd_models(...)
+        def cmd_test(...)
+        def cmd_usage(...)
+        def cmd_token(...)
+        def cmd_configure_codex(...)
+        def _configure_codex_inline(...)
+        def cmd_convert(...)
+        def main(...)
+  - config.py
+      Symbols:
+        class Settings:
+            def warn_non_localhost(...)
+            def warn_log_prompts(...)
+            def nvidia_api_key_configured(...)
+            def effective_token(...)
+            def nvidia_base_url_clean(...)
+        def _load_or_generate_token(...)
+        def get_settings(...)
+        def reset_settings(...)
+  - logging.py
+      Symbols:
+        def redact(...)
+        class RedactingFilter:
+            def filter(...)
+        def configure_logging(...)
+  - main.py
+      Symbols:
+        def run(...)
+
+Directory: /src/codebridge/api
+  - __init__.py
+  - app.py
+      Symbols:
+        def create_app(...)
+  - chat.py
+  - diagnostics.py
+      Symbols:
+        def _build_notes(...)
+  - documents.py
+  - health.py
+  - images.py
+      Symbols:
+        class ImageGenerationRequest:
+  - mcp.py
+  - models.py
+  - responses.py
+  - usage.py
+
+Directory: /src/codebridge/routing
+  - __init__.py
+  - router.py
+      Symbols:
+        def resolve_model(...)
+
+Directory: /src/codebridge/telemetry
+  - __init__.py
+  - storage.py
+      Symbols:
+        class ModelStats:
+        class TelemetryStore:
+            def record_request(...)
+            def snapshot(...)
+        def get_telemetry(...)
+        def reset_telemetry(...)
+
+Directory: /src/codebridge/security
+  - __init__.py
+  - auth.py
+      Symbols:
+        class AuthError:
+            def __init__(...)
+        def validate_local_token(...)
+        def _client_ip(...)
+
+Directory: /src/codebridge/models
+  - __init__.py
+  - catalog.py
+      Symbols:
+        class ModelInfo:
+            def to_dict(...)
+        class ModelCatalog:
+            def __init__(...)
+            def is_stale(...)
+            def update(...)
+            def get_model(...)
+            def list_models(...)
+            def has_model(...)
+            def count(...)
+            def to_openai_format(...)
+        def _infer_capabilities(...)
+        def get_catalog(...)
+        def reset_catalog(...)
+
+Directory: /src/codebridge/services
+  - document.py
+      Symbols:
+        class DocumentService:
+            def __init__(...)
+            def _get_converter(...)
+            def convert_file(...)
+            def convert_bytes(...)
+        def get_document_service(...)
+
+Directory: /src/codebridge/providers
+  - __init__.py
+  - nvidia.py
+      Symbols:
+        class NvidiaProviderError:
+            def __init__(...)
+        class NvidiaProvider:
+            def __init__(...)
+            def _get_client(...)
+        def _raise_for_nvidia_error(...)
+        def _map_http_error(...)
+        def get_provider(...)
+
+Directory: /src/codebridge/responses
+  - __init__.py
+  - compatibility.py
+      Symbols:
+        def responses_to_chat(...)
+        def _convert_input_to_messages(...)
+        def _convert_tools(...)
+        def chat_to_responses(...)
+        def _extract_text(...)
+        def _map_finish_reason(...)
+        def _sse_bytes(...)
+  - errors.py
+      Symbols:
+        def error_response(...)
+        def _code_to_type(...)
+
+Directory: /.codex
+  - config.example.toml
