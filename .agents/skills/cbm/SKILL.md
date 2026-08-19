@@ -10,12 +10,13 @@ CRÍTICO: Al activar esta habilidad (`cbm`), el agente de IA **DEBE procesar la 
 ## ⚡ Instrucción de Ejecución Obligatoria para el Agente
 
 Cuando el usuario incluya `cbm` en su mensaje:
-1. El agente **DEBE** ejecutar la tarea del usuario llamando al Gateway de CodeBridge:
+1. El agente local (Antigravity/Gemini) **DEBE recopilar el contexto necesario** antes de llamar a NVIDIA. Esto significa leer el archivo activo, detectar los errores en la terminal o analizar los archivos mencionados por el usuario.
+2. El agente **DEBE** empaquetar el prompt del usuario junto con el código/contexto recopilado en un gran string.
+3. El agente **DEBE** ejecutar la tarea llamando al Gateway de CodeBridge pasando todo el paquete de información:
    ```bash
-   python3 scripts/query_cbm.py "<instrucción_del_usuario>"
+   python3 scripts/query_cbm.py "El usuario solicita: <instrucción_del_usuario>. Contexto relevante: <código_y_archivos_activos>"
    ```
-2. O realizando una petición HTTP `POST http://127.0.0.1:8787/v1/responses` con el token `FP48A58AloNP9QcOjA0csi3awTg1zT_LaLAha2DqCKM`.
-3. Presentar la respuesta generada directamente por el modelo de NVIDIA NIM a través de CodeBridge.
+4. Presentar la respuesta generada directamente por el modelo de NVIDIA NIM a través de CodeBridge.
 
 ## 📡 Endpoints del Gateway
 - **Gateway Responses API:** `http://127.0.0.1:8787/v1/responses`
