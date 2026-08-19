@@ -18,7 +18,7 @@ def query_codebridge(prompt: str, model: str = None) -> str:
     
     token = token_file.read_text().strip() if token_file.exists() else "FP48A58AloNP9QcOjA0csi3awTg1zT_LaLAha2DqCKM"
     
-    HISTORY_FILE = Path(__file__).parent.parent / ".cbm_history.json"
+    HISTORY_FILE = Path.cwd() / ".cbm_history.json"
     
     # Load history
     history = []
@@ -45,7 +45,7 @@ def query_codebridge(prompt: str, model: str = None) -> str:
     system_instructions = "Eres un asistente de programación experto impulsado por NVIDIA NIM a través de CodeBridge Gateway. Responde con soluciones técnicas de alta calidad en español."
     
     # 2. Inject Project Map
-    map_file = Path(__file__).parent.parent / ".cbm_project_map.txt"
+    map_file = Path.cwd() / ".cbm_project_map.txt"
     if map_file.exists():
         try:
             map_data = map_file.read_text(encoding="utf-8")
