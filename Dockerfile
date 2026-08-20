@@ -16,8 +16,8 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR="/usr/local/
 
 WORKDIR /app
 
-# Copiar archivos de dependencias
-COPY pyproject.toml uv.lock* ./
+# Copiar archivos de dependencias y readme
+COPY pyproject.toml uv.lock* README.md README_EN.md ./
 
 # Sincronizar dependencias
 RUN uv sync --frozen || uv sync

@@ -85,9 +85,18 @@ NVIDIA_API_KEY=nvapi-tu-clave-aqui
 ```
 
 ### Paso 4: Iniciar CodeBridge y Verificar Conexión
+Puedes iniciar CodeBridge de dos maneras (Local o con Docker):
+
+**Opción A: Despliegue Local (con `uv`)**
 Ejecuta el lanzador ultracorto `cb`:
 ```bash
 ./scripts/cb mcp
+```
+
+**Opción B: Despliegue en Servidor Docker**
+Si prefieres no instalar dependencias locales (como Tesseract-OCR), usa Docker:
+```bash
+docker compose up -d --build
 ```
 
 En otra terminal, corre la prueba de conectividad automática con NVIDIA:

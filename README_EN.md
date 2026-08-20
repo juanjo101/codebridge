@@ -78,7 +78,11 @@ bash scripts/setup.sh
 echo "NVIDIA_API_KEY=nvapi-YOUR_KEY" > .env
 
 # 4. Start CodeBridge
-./scripts/cb
+# Option A: Local Deployment (using uv)
+./scripts/cb mcp
+
+# Option B: Docker Deployment (No local Tesseract-OCR needed)
+docker compose up -d --build
 
 # 5. Connect Codex (Transparent for All Projects)
 uv run python scripts/configure_codex.py
