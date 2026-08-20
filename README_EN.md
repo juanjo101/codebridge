@@ -98,6 +98,7 @@ Please set up and configure CodeBridge in this environment:
 3. Launch CodeBridge background server using `./scripts/cb mcp` or `uv run codebridge serve`.
 4. Run `python scripts/test_nvidia.py` to verify the connection.
 5. Run `uv run python scripts/configure_codex.py` to connect Codex to CodeBridge globally.
+6. Apply the global skill to your context and make sure to keep the server up.
 ```
 
 ## CLI Reference

@@ -123,6 +123,7 @@ Por favor despliega y configura CodeBridge en este entorno local ejecutando los 
 3. Inicia el gateway servidor en segundo plano con `./scripts/cb mcp` o `uv run codebridge serve`.
 4. Ejecuta el script de prueba de conectividad `python scripts/test_nvidia.py` para validar la conexión con NVIDIA.
 5. Ejecuta `uv run python scripts/configure_codex.py` para vincular Codex con CodeBridge globalmente y muéstrame el estado final.
+6. Aplica la skill global a tu contexto y asegúrate de mantener el servidor arriba.
 ```
 
 ---
