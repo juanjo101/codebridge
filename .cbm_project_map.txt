@@ -8,6 +8,7 @@ Directory: /
   - .env
   - .gitignore
   - AGENTS.md
+  - Instrucción maestra para integrar Ciberseguridad y QA en CodeBridge.md
   - LICENSE
   - README.md
   - README_EN.md
