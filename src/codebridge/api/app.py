@@ -20,6 +20,7 @@ from codebridge.api.mcp import router as mcp_router
 from codebridge.api.models import router as models_router
 from codebridge.api.responses import router as responses_router
 from codebridge.api.usage import router as usage_router
+from codebridge.api.ocr import router as ocr_router
 
 from codebridge.config import get_settings
 from codebridge.providers.nvidia import reset_provider
@@ -131,6 +132,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(diag_router)
     app.include_router(usage_router)
+    app.include_router(ocr_router)
 
 
     # Auth error handler (must come before global handler)

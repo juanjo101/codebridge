@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  codebridge:
+    build: .
+    container_name: codebridge-server
+    ports:
+      - "8787:8787"
+    volumes:
+      - .codebridge_token:/app/.codebridge_token
+      - .cbm_history.json:/app/.cbm_history.json
+      - .cbm_project_map.txt:/app/.cbm_project_map.txt
+      # Uncomment to mount the config file directly
+      # - ~/.codex/config.toml:/root/.codex/config.toml
+    env_file:
+      - .env
+    restart: unless-stopped
