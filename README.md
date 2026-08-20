@@ -143,6 +143,29 @@ Invocable dentro del entorno del agente usando la palabra clave **`cbm`** (Skill
 
 ---
 
+## 🛡️ Ciberseguridad y Quality Assurance (QA) integrados
+
+CodeBridge ahora actúa como un verdadero **QA Engineer** y **Application Security Engineer**, pudiendo realizar las siguientes operaciones de manera automática:
+
+### Capacidades de Seguridad (Skill: `codebridge-security` / `codebridge-security-scan`)
+- **Detección de vulnerabilidades:** OWASP Top 10, CWE, inyecciones, XSS, autenticación rota, etc.
+- **Escaneo automatizado:** Integración transparente con herramientas locales (Semgrep, Bandit, pip-audit, npm audit, Gitleaks, ZAP).
+- **Security Score y Remediaciones:** Calificación de seguridad, análisis detallado de fallos y corrección automática (con autorización).
+
+### Capacidades de QA (Skill: `codebridge-qa` / `codebridge-test-generator`)
+- **Generación de Pruebas:** Unit Tests, Integration, E2E (pytest, unittest, Jest, Vitest, Playwright).
+- **Estrategia de Quality Assurance:** Análisis de código, identificación de edge cases, validación de inputs y regression testing.
+- **Flujo Integrado:** Detectar fallos → Explicar → Fix automático → Regenerar tests → Re-escanear seguridad.
+
+### Comandos y prompts de uso diario
+Puedes invocar estas habilidades fácilmente indicándole al agente (Antigravity/Codex):
+- `"cbm audit"` - Comando unificado de alto nivel para realizar un escaneo combinado de Seguridad, Dependencias y QA.
+- `"Revisa la seguridad de este proyecto"` o `"Busca vulnerabilidades"`
+- `"Prueba este proyecto"` o `"Genera integration tests"`
+- `"Analiza las dependencias y busca secretos expuestos"`
+
+---
+
 ## 📚 Guías Detalladas de la Comunidad
 
 - 📖 **[Guía de Instalación Detallada](docs/GUIA_INSTALACION_ES.md)**

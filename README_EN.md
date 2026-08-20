@@ -110,6 +110,26 @@ uv run codebridge models  List NVIDIA models
 uv run codebridge test    Run NVIDIA connectivity test
 ```
 
+## 🛡️ Integrated Cybersecurity and Quality Assurance (QA)
+
+CodeBridge now acts as a true **QA Engineer** and **Application Security Engineer**, capable of performing the following operations automatically:
+
+### Security Capabilities (Skill: `codebridge-security` / `codebridge-security-scan`)
+- **Vulnerability Detection:** OWASP Top 10, CWE, injections, XSS, broken authentication, etc.
+- **Automated Scanning:** Seamless integration with local tools (Semgrep, Bandit, pip-audit, npm audit, Gitleaks, ZAP).
+- **Security Score & Remediations:** Security grading, detailed finding analysis, and automated fixes (with explicit authorization).
+
+### QA Capabilities (Skill: `codebridge-qa` / `codebridge-test-generator`)
+- **Test Generation:** Unit Tests, Integration, E2E (pytest, unittest, Jest, Vitest, Playwright).
+- **QA Strategy:** Code analysis, edge case identification, input validation, and regression testing.
+- **Integrated Workflow:** Detect findings → Explain → Auto-fix → Regenerate tests → Security re-scan.
+
+### Daily Usage Commands & Prompts
+You can easily invoke these skills by telling the agent (Antigravity/Codex):
+- `"cbm audit"` - Unified high-level command to perform a combined Security, Dependency, and QA scan.
+- `"Check the security of this project"` or `"Find vulnerabilities"`
+- `"Test this project"` or `"Generate integration tests"`
+- `"Analyze dependencies and look for exposed secrets"`
 ## 👤 Author & Creator
 
 Created and maintained by **Juan José Díaz Nerio** ([@juanjo101](https://github.com/juanjo101)).
