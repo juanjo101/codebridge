@@ -8,6 +8,7 @@ Directory: /
   - .env
   - .gitignore
   - AGENTS.md
+  - Dockerfile
   - Instrucción maestra para integrar Ciberseguridad y QA en CodeBridge.md
   - LICENSE
   - README.md
@@ -16,6 +17,7 @@ Directory: /
   - codebridge_server.log
   - codebridge_stderr.log
   - codebridge_stdout.log
+  - docker-compose.yml
   - prompt
   - pyproject.toml
   - uv.lock
@@ -203,6 +205,9 @@ Directory: /src/codebridge/api
         class ImageGenerationRequest:
   - mcp.py
   - models.py
+  - ocr.py
+      Symbols:
+        def extract_text_from_pdf(...)
   - responses.py
   - usage.py
 

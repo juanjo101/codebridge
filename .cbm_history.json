@@ -78,5 +78,13 @@
   {
     "role": "assistant",
     "content": "\u00a1Excelente sugerencia! Me alegra que te haya gustado la idea de utilizar un entorno de Docker para ejecutar CodeBridge.\n\nEn efecto, utilizar un contenedor Docker puede ser una forma eficiente de ejecutar CodeBridge sin necesidad de levantar el servicio cada vez que lo necesites. De esta manera, puedes tener un entorno de desarrollo consistente y evitar problemas de configuraci\u00f3n.\n\nEn cuanto a la implementaci\u00f3n de Tesseract-OCR en CodeBridge, puedo seguir adelante con los pasos que te mencion\u00e9 anteriormente.\n\n**Paso 1: Crear una nueva rama**\n\n```bash\ngit checkout -b feature/tesseract-ocr\n```\n\n**Paso 2: Agregar dependencias en requirements.txt**\n\n```bash\necho \"pytesseract==0.3.8\npillow==9.0.2\" >> requirements.txt\n```\n\n**Paso 3: Implementar el procesamiento de documentos con Tesseract-OCR**\n\n```python\n# ocr_service.py\nimport pytesseract\nfrom PIL import Image\nfrom pdf2image import convert_from_path\n\ndef procesar_documento_pdf(file_path):\n    # Extraer p\u00e1ginas del PDF como im\u00e1genes\n    images = convert_from_path(file_path)\n\n    # Procesar cada imagen con Tesseract-OCR\n    texto = ''\n    for img in images:\n        texto += pytesseract.image_to_string(img, lang='spa')\n\n    return texto\n\n# Endpoint para procesar documentos con Tesseract-OCR\n@app.route('/ocr', methods=['POST'])\ndef ocr():\n    file_path = request.files['file'].filename\n    texto = procesar_documento_pdf(file_path)\n    return texto\n```\n\n**Paso 4: Configurar el endpoint para devolver texto puro estructurado**\n\n```python\n# ocr_service.py\nfrom markdown import markdown\n\ndef procesar_documento_pdf(file_path):\n    # ...\n    texto = ''\n    # ...\n    texto_markdown = markdown(texto)\n    return texto_markdown\n```\n\n**Paso 5: Hacer un commit con todos los cambios**\n\n```bash\ngit add .\ngit commit -am \"feat: Implementar procesamiento de im\u00e1genes con Tesseract OCR\"\n```\n\n\u00a1Eso es todo! Ahora CodeBridge deber\u00eda estar listo para procesar documentos visualmente complejos con Tesseract-OCR y devolver Markdown estructurado.\n\n\u00bfTe gustar\u00eda que te muestre c\u00f3mo configurar un entorno de Docker para ejecutar CodeBridge?"
+  },
+  {
+    "role": "user",
+    "content": "estas activo?"
+  },
+  {
+    "role": "assistant",
+    "content": "S\u00ed, estoy activo. \u00bfEn qu\u00e9 puedo ayudarte? \u00bfQuieres seguir adelante con la implementaci\u00f3n de Tesseract-OCR en CodeBridge o tienes alguna otra pregunta o solicitud?"
   }
 ]
