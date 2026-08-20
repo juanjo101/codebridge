@@ -1,6 +1,8 @@
 # Secrets - NEVER commit
 .env
 .codebridge_token
+.cbm_history.json
+.cbm_project_map.txt
 
 # Virtual environments
 .venv/
