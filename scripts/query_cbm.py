@@ -82,7 +82,7 @@ def query_codebridge(prompt: str, model: str = None) -> str:
     )
     
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=180) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             result_text = json.dumps(data, indent=2)
             
